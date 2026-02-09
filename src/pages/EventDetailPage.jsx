@@ -1,6 +1,6 @@
 import { useParams, Link } from "react-router-dom";
-import { ArrowLeft, MapPin, Clock, Users, DollarSign, FileText, UtensilsCrossed } from "lucide-react";
-import { events, tasks, menus } from "../data/sampleData";
+import { ArrowLeft, MapPin, Clock, Users, DollarSign, FileText, UtensilsCrossed, Trash2, ClipboardList } from "lucide-react";
+import { events, tasks, menus, wasteReports } from "../data/sampleData";
 
 export default function EventDetailPage() {
   const { id } = useParams();
@@ -10,13 +10,38 @@ export default function EventDetailPage() {
     return (
       <div className="page">
         <h2 className="page-title">Event not found</h2>
-        <Link to="/events" className="btn btn--secondary">← Back to Events</Link>
+        <Link to="/events" className="btn btn--secondary">Back to Events</Link>
       </div>
     );
   }
 
   const eventTasks = tasks.filter((t) => t.eventId === event.id);
   const eventMenu = menus.find((m) => m.eventId === event.id);
+  const wasteReport = wasteReports.find((r) => r.eventId === event.id);
+
+  // Compute waste summary if report exists
+  let wasteSummary = null;
+  if (wasteReport) {
+    let totalPrepared = 0;
+    let totalWasted = 0;
+    let totalWasteCost = 0;
+    let totalFoodCost = 0;
+    for (const cat of wasteReport.categories) {
+      for (const item of cat.items) {
+        totalPrepared += item.prepared;
+        totalWasted += item.wasted;
+        totalWasteCost += item.wasted * item.costPerUnit;
+        totalFoodCost += item.prepared * item.costPerUnit;
+      }
+    }
+    wasteSummary = {
+      wastePercent: totalPrepared > 0 ? ((totalWasted / totalPrepared) * 100) : 0,
+      totalWasteCost,
+      totalFoodCost,
+      actualAttendees: wasteReport.actualAttendees,
+      notes: wasteReport.notes,
+    };
+  }
 
   return (
     <div className="page">
@@ -31,14 +56,48 @@ export default function EventDetailPage() {
             {event.status}
           </span>
         </div>
-        <Link to={`/events/${event.id}/edit`} className="btn btn--secondary">
-          Edit Event
-        </Link>
+        <div className="detail-header-actions">
+          <Link to={`/events/${event.id}/waste`} className="btn btn--secondary">
+            <Trash2 size={16} /> {wasteReport ? "View Waste Report" : "Log Waste"}
+          </Link>
+          <Link to={`/events/${event.id}/edit`} className="btn btn--secondary">
+            Edit Event
+          </Link>
+        </div>
       </div>
 
       <div className="detail-hero">
         <img src={event.image} alt={event.name} className="detail-hero-image" />
       </div>
+
+      {/* Waste Summary Banner */}
+      {wasteSummary && (
+        <div className={`waste-report-banner ${wasteSummary.wastePercent > 15 ? "waste-report-banner--warning" : "waste-report-banner--good"}`}>
+          <div className="waste-report-banner-stats">
+            <div className="waste-report-banner-stat">
+              <span className="waste-report-banner-value">{wasteSummary.wastePercent.toFixed(1)}%</span>
+              <span className="waste-report-banner-label">Waste Rate</span>
+            </div>
+            <div className="waste-report-banner-stat">
+              <span className="waste-report-banner-value">${wasteSummary.totalWasteCost.toFixed(0)}</span>
+              <span className="waste-report-banner-label">Waste Cost</span>
+            </div>
+            <div className="waste-report-banner-stat">
+              <span className="waste-report-banner-value">{wasteSummary.actualAttendees}/{event.guests}</span>
+              <span className="waste-report-banner-label">Actual / Expected</span>
+            </div>
+            <div className="waste-report-banner-stat">
+              <span className="waste-report-banner-value">${wasteSummary.totalFoodCost.toFixed(0)}</span>
+              <span className="waste-report-banner-label">Total Food Cost</span>
+            </div>
+          </div>
+          {wasteSummary.notes && (
+            <p className="waste-report-banner-notes">
+              <ClipboardList size={14} /> {wasteSummary.notes}
+            </p>
+          )}
+        </div>
+      )}
 
       <div className="detail-grid">
         <section className="card">

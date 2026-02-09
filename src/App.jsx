@@ -8,6 +8,8 @@ import AnalyticsPage from "./pages/AnalyticsPage";
 import MenuPage from "./pages/MenuPage";
 import MenuEditorPage from "./pages/MenuEditorPage";
 import TasksPage from "./pages/TasksPage";
+import WasteReportPage from "./pages/WasteReportPage";
+import PrepPlannerPage from "./pages/PrepPlannerPage";
 
 export default function App() {
   return (
@@ -19,10 +21,12 @@ export default function App() {
           <Route path="/events/new" element={<CreateEventPage />} />
           <Route path="/events/:id" element={<EventDetailPage />} />
           <Route path="/events/:id/edit" element={<CreateEventPage />} />
+          <Route path="/events/:eventId/waste" element={<WasteReportPage />} />
           <Route path="/analytics" element={<AnalyticsPage />} />
           <Route path="/menu" element={<MenuPage />} />
           <Route path="/menu/new" element={<MenuEditorPage />} />
           <Route path="/menu/:id/edit" element={<MenuEditorPage />} />
+          <Route path="/prep-planner" element={<PrepPlannerPage />} />
           <Route path="/tasks" element={<TasksPage />} />
         </Route>
       </Routes>

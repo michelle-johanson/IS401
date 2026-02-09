@@ -902,9 +902,404 @@ img {
   background: var(--color-yellow);
 }
 
+/* === Tabs === */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 20px;
+  border-bottom: 2px solid var(--color-border);
+  padding-bottom: 0;
+}
+
+.tab-btn {
+  padding: 8px 20px;
+  border: none;
+  background: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -2px;
+  font-family: inherit;
+  transition: all 0.15s ease;
+}
+
+.tab-btn:hover {
+  color: var(--color-text);
+}
+
+.tab-btn--active {
+  color: var(--color-primary);
+  border-bottom-color: var(--color-primary);
+}
+
+/* === Waste Summary Row === */
+.waste-summary-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.waste-summary-card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  padding: 14px 18px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: var(--shadow);
+}
+
+.waste-summary-icon {
+  padding: 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+}
+
+.waste-summary-icon--red { background: #fee2e2; color: var(--color-red); }
+.waste-summary-icon--yellow { background: #fef3c7; color: var(--color-yellow); }
+.waste-summary-icon--green { background: #d1fae5; color: var(--color-green); }
+.waste-summary-icon--pink { background: #fce7f3; color: #ec4899; }
+.waste-summary-icon--blue { background: #dbeafe; color: var(--color-blue); }
+.waste-summary-icon--purple { background: #ede9fe; color: var(--color-purple); }
+
+.waste-summary-value {
+  font-size: 1.1rem;
+  font-weight: 700;
+}
+
+.waste-summary-label {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+/* === Waste Alert Banner (Home) === */
+.waste-alert-banner {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 18px;
+  background: #fef3c7;
+  border: 1px solid #fde68a;
+  border-radius: var(--radius);
+  margin-bottom: 20px;
+  font-size: 0.875rem;
+  color: #92400e;
+}
+
+.waste-alert-link {
+  margin-left: auto;
+  font-weight: 600;
+  white-space: nowrap;
+  color: #92400e;
+}
+
+.waste-alert-link:hover {
+  text-decoration: underline;
+}
+
+/* === Waste Report Banner (Event Detail) === */
+.waste-report-banner {
+  border-radius: var(--radius);
+  padding: 18px 24px;
+  margin-bottom: 20px;
+}
+
+.waste-report-banner--good {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+}
+
+.waste-report-banner--warning {
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+}
+
+.waste-report-banner-stats {
+  display: flex;
+  gap: 32px;
+  flex-wrap: wrap;
+}
+
+.waste-report-banner-stat {
+  display: flex;
+  flex-direction: column;
+}
+
+.waste-report-banner-value {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--color-text);
+}
+
+.waste-report-banner-label {
+  font-size: 0.78rem;
+  color: var(--color-text-muted);
+}
+
+.waste-report-banner-notes {
+  margin-top: 12px;
+  font-size: 0.85rem;
+  color: var(--color-text-muted);
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+}
+
+.detail-header-actions {
+  display: flex;
+  gap: 8px;
+}
+
+/* === Waste Category Section (Report Page) === */
+.waste-category-section {
+  margin-bottom: 24px;
+}
+
+.waste-category-title {
+  font-size: 0.9rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+/* === Waste Table === */
+.waste-table,
+.prep-table {
+  width: 100%;
+}
+
+.waste-table-header,
+.prep-table-header {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr);
+  gap: 8px;
+  padding: 8px 0;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  border-bottom: 2px solid var(--color-border);
+  letter-spacing: 0.3px;
+}
+
+.prep-table-header {
+  grid-template-columns: 2fr repeat(7, 1fr);
+}
+
+.waste-table-row,
+.prep-table-row {
+  display: grid;
+  grid-template-columns: 2fr repeat(6, 1fr);
+  gap: 8px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-border);
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.prep-table-row {
+  grid-template-columns: 2fr repeat(7, 1fr);
+}
+
+.waste-table-row:last-child,
+.prep-table-row:last-child {
+  border-bottom: none;
+}
+
+.waste-item-name {
+  font-weight: 500;
+}
+
+.waste-number--alert {
+  color: var(--color-red);
+  font-weight: 600;
+}
+
+.waste-cost {
+  font-weight: 500;
+}
+
+.waste-cost--high {
+  color: var(--color-red);
+  font-weight: 600;
+}
+
+.text-green {
+  color: var(--color-green);
+}
+
+/* === Waste Trend Chart === */
+.waste-trend-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 16px;
+  height: 180px;
+  padding: 10px 0;
+}
+
+.waste-trend-chart--compact {
+  height: 120px;
+}
+
+.waste-trend-bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+}
+
+.waste-trend-bar-container {
+  flex: 1;
+  width: 100%;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+
+.waste-trend-bar {
+  width: 100%;
+  max-width: 60px;
+  background: linear-gradient(to top, var(--color-primary), #f87171);
+  border-radius: 6px 6px 0 0;
+  position: relative;
+  min-height: 8px;
+  transition: height 0.3s ease;
+}
+
+.waste-trend-bar-label {
+  position: absolute;
+  top: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.waste-trend-month {
+  font-size: 0.72rem;
+  color: var(--color-text-muted);
+  margin-top: 6px;
+}
+
+/* === Disposal Breakdown === */
+.disposal-breakdown {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.disposal-item {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.disposal-bar-track {
+  height: 10px;
+  background: var(--color-bg);
+  border-radius: 5px;
+  overflow: hidden;
+}
+
+.disposal-bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.3s ease;
+}
+
+.disposal-bar--donated { background: #ec4899; }
+.disposal-bar--composted { background: var(--color-green); }
+.disposal-bar--trash { background: var(--color-text-muted); }
+
+.disposal-label-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+}
+
+.disposal-badge {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 1px 8px;
+  border-radius: 10px;
+  text-transform: capitalize;
+}
+
+.disposal-badge--donated { background: #fce7f3; color: #be185d; }
+.disposal-badge--composted { background: #d1fae5; color: #065f46; }
+.disposal-badge--trash { background: #f3f4f6; color: #6b7280; }
+
+.inline-icon {
+  display: inline;
+  vertical-align: -2px;
+}
+
+/* === Recommendations === */
+.recommendations-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.recommendation-item {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  padding: 10px 12px;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.recommendation-icon {
+  color: var(--color-yellow);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* === Prep Planner Controls === */
+.prep-controls {
+  display: flex;
+  gap: 16px;
+  align-items: flex-end;
+  margin-bottom: 20px;
+}
+
+.prep-controls .form-group {
+  flex: 1;
+}
+
+.prep-controls .form-group:last-child {
+  flex: 0 0 100px;
+}
+
+.prep-suggestion {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 24px;
+  font-size: 0.8rem;
+  color: #92400e;
+  background: #fffbeb;
+  border-radius: 0 0 6px 6px;
+  margin-top: -1px;
+}
+
 /* === Responsive adjustments for smaller screens === */
 @media (max-width: 1100px) {
-  .kpi-row {
+  .kpi-row,
+  .waste-summary-row {
     grid-template-columns: repeat(2, 1fr);
   }
 

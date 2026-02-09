@@ -1,11 +1,12 @@
 import { NavLink } from "react-router-dom";
-import { Home, CalendarDays, BarChart3, UtensilsCrossed, CheckSquare } from "lucide-react";
+import { Home, CalendarDays, BarChart3, UtensilsCrossed, CheckSquare, ShoppingCart } from "lucide-react";
 
 const navItems = [
   { to: "/", icon: Home, label: "Home" },
   { to: "/events", icon: CalendarDays, label: "Events" },
   { to: "/analytics", icon: BarChart3, label: "Analytics" },
   { to: "/menu", icon: UtensilsCrossed, label: "Menu" },
+  { to: "/prep-planner", icon: ShoppingCart, label: "Prep Planner" },
   { to: "/tasks", icon: CheckSquare, label: "Tasks" },
 ];
 
