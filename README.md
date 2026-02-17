@@ -1,16 +1,46 @@
-# React + Vite
+# Catering Management System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+## Database Setup
+We are using PostgreSQL for this project. Follow these steps to initialize your local database with the sample data.
 
-Currently, two official plugins are available:
+### 1. Install Dependencies
+Make sure you have PostgreSQL installed and running on your machine.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+### 2. Environment Variables
+Create a `.env` file in the root directory and add your local Postgres credentials (see `.env.example`).
 
-## React Compiler
+### 3. Initialize Database
+Run the following commands in your terminal from the project root:
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+```bash
+# Create the database
+psql postgres -c "CREATE DATABASE catering;"
 
-## Expanding the ESLint configuration
+# Run the schema to create tables
+psql -d catering -f db/schema.sql
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+# Seed the database with sample data
+psql -d catering -f db/seed.sql
+```
+
+### 4. Run Project in LocalHost
+Run `npm run dev` and go to localhost 5173. Everything should work right.
+
+---
+## Available Data Tables
+The database currently includes tables for:
+* **events**: Core event details (Weddings, Galas, etc.)
+* **menus**: Linked to specific events
+* **menu_categories & menu_items**: Detailed food options and dietary info
+* **tasks**: Todo items for staff (e.g., Emily, James, Sarah)
+
+## Database Schema Overview
+
+| Table | Purpose | Key Relations |
+| :--- | :--- | :--- |
+| **events** | Stores client info, venue, and budget | `id` is referenced by menus and tasks |
+| **menus** | Container for event-specific food | Belongs to an `event_id` |
+| **menu_items**| Individual dishes and prices | Belongs to a `category_id` |
+| **tasks** | Management checklist items | Belongs to an `event_id` |
+
+**Would you like me to help you create a `db/index.js` file using `pg` (node-postgres) so your JavaScript code can actually talk to this new database?**

@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useParams, Link, useNavigate, useSearchParams } from "react-router-dom";
 import { ArrowLeft, Plus, Trash2, Save, GripVertical } from "lucide-react";
-import { menus, events } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function MenuEditorPage() {
   const { id } = useParams();
@@ -9,17 +10,31 @@ export default function MenuEditorPage() {
   const navigate = useNavigate();
   const isNew = id === "new";
 
-  const existingMenu = !isNew ? menus.find((m) => m.id === Number(id)) : null;
+  const [menuName, setMenuName] = useState("");
+  const [categories, setCategories] = useState([
+    { name: "Appetizers", items: [] },
+    { name: "Main Course", items: [] },
+    { name: "Desserts", items: [] },
+  ]);
+  const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(!isNew);
+
   const eventIdParam = searchParams.get("eventId");
 
-  const [menuName, setMenuName] = useState(existingMenu?.name || "");
-  const [categories, setCategories] = useState(
-    existingMenu?.categories || [
-      { name: "Appetizers", items: [] },
-      { name: "Main Course", items: [] },
-      { name: "Desserts", items: [] },
-    ]
-  );
+  useEffect(() => {
+    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
+
+    if (!isNew) {
+      fetch(`${API}/menus`).then((r) => r.json()).then((menus) => {
+        const existing = menus.find((m) => m.id === Number(id));
+        if (existing) {
+          setMenuName(existing.name);
+          setCategories(existing.categories);
+        }
+        setLoading(false);
+      });
+    }
+  }, [id, isNew]);
 
   const addCategory = () => {
     setCategories([...categories, { name: "New Category", items: [] }]);
@@ -64,14 +79,25 @@ export default function MenuEditorPage() {
     setCategories(updated);
   };
 
-  const handleSave = () => {
-    alert(
-      isNew
-        ? "Menu created successfully! (Demo - no backend persistence)"
-        : "Menu updated successfully! (Demo - no backend persistence)"
-    );
-    navigate("/menu");
+  const handleSave = async () => {
+    const body = { name: menuName, eventId: eventIdParam ? Number(eventIdParam) : null, categories };
+    const url = isNew ? `${API}/menus` : `${API}/menus/${id}`;
+    const method = isNew ? "POST" : "PUT";
+
+    const res = await fetch(url, {
+      method,
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(body),
+    });
+
+    if (res.ok) {
+      navigate("/menu");
+    } else {
+      alert("Failed to save menu.");
+    }
   };
+
+  if (loading) return <div className="page"><p>Loading...</p></div>;
 
   return (
     <div className="page">

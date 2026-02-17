@@ -1,10 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Plus, ArrowRight } from "lucide-react";
-import { events as allEvents } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function EventsPage() {
+  const [allEvents, setAllEvents] = useState([]);
   const [search, setSearch] = useState("");
+
+  useEffect(() => {
+    fetch(`${API}/events`).then((r) => r.json()).then(setAllEvents);
+  }, []);
 
   const filtered = allEvents.filter(
     (e) =>

@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { ArrowLeft, Save } from "lucide-react";
 
+const API = "http://localhost:3001/api";
+
 export default function CreateEventPage() {
   const navigate = useNavigate();
   const [form, setForm] = useState({
@@ -20,11 +22,18 @@ export default function CreateEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // In a real app, this would save to a backend
-    alert("Event created successfully! (Demo - no backend persistence)");
-    navigate("/events");
+    const res = await fetch(`${API}/events`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(form),
+    });
+    if (res.ok) {
+      navigate("/events");
+    } else {
+      alert("Failed to create event.");
+    }
   };
 
   return (

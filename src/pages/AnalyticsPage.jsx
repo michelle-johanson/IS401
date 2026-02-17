@@ -1,9 +1,21 @@
-import { DollarSign, Trash2, CheckCircle, Target, CalendarDays, TrendingUp } from "lucide-react";
-import { kpis, events } from "../data/sampleData";
+import { useState, useEffect } from "react";
+import { DollarSign, Trash2, CheckCircle, Target } from "lucide-react";
+
+const API = "http://localhost:3001/api";
 
 export default function AnalyticsPage() {
+  const [kpis, setKpis] = useState(null);
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API}/kpis`).then((r) => r.json()).then(setKpis);
+    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
+  }, []);
+
+  if (!kpis) return <div className="page"><p>Loading...</p></div>;
+
   const totalRevenue = events.reduce((sum, e) => sum + e.budget, 0);
-  const avgBudget = totalRevenue / events.length;
+  const avgBudget = events.length ? totalRevenue / events.length : 0;
 
   return (
     <div className="page">

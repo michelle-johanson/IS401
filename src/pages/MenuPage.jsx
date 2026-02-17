@@ -1,8 +1,18 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Star, Edit, Plus } from "lucide-react";
-import { menus, events } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function MenuPage() {
+  const [menus, setMenus] = useState([]);
+  const [events, setEvents] = useState([]);
+
+  useEffect(() => {
+    fetch(`${API}/menus`).then((r) => r.json()).then(setMenus);
+    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
+  }, []);
+
   return (
     <div className="page">
       <div className="page-header">

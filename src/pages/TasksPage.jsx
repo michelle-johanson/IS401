@@ -1,10 +1,12 @@
-import { useState } from "react";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+
 import { Plus, GripVertical } from "lucide-react";
-import { tasks as initialTasks, events } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function TasksPage() {
-  const [taskList, setTaskList] = useState(initialTasks);
+  const [taskList, setTaskList] = useState([]);
+  const [events, setEvents] = useState([]);
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [newTask, setNewTask] = useState({
     label: "",
@@ -13,7 +15,18 @@ export default function TasksPage() {
     eventId: "",
   });
 
-  const toggleTask = (id) => {
+  useEffect(() => {
+    fetch(`${API}/tasks`).then((r) => r.json()).then(setTaskList);
+    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
+  }, []);
+
+  const toggleTask = async (id) => {
+    const task = taskList.find((t) => t.id === id);
+    await fetch(`${API}/tasks/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ completed: !task.completed }),
+    });
     setTaskList(
       taskList.map((t) =>
         t.id === id ? { ...t, completed: !t.completed } : t
@@ -21,17 +34,20 @@ export default function TasksPage() {
     );
   };
 
-  const handleCreateTask = (e) => {
+  const handleCreateTask = async (e) => {
     e.preventDefault();
-    const task = {
-      id: Date.now(),
-      label: newTask.label,
-      description: newTask.description,
-      assignedTo: newTask.assignedTo,
-      eventId: newTask.eventId ? Number(newTask.eventId) : null,
-      completed: false,
-    };
-    setTaskList([...taskList, task]);
+    const res = await fetch(`${API}/tasks`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        label: newTask.label,
+        description: newTask.description,
+        assignedTo: newTask.assignedTo,
+        eventId: newTask.eventId ? Number(newTask.eventId) : null,
+      }),
+    });
+    const created = await res.json();
+    setTaskList([...taskList, created]);
     setNewTask({ label: "", description: "", assignedTo: "", eventId: "" });
     setShowCreateForm(false);
   };

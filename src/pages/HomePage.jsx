@@ -1,8 +1,22 @@
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { CalendarDays, DollarSign, Trash2, CheckCircle, Clock } from "lucide-react";
-import { events, tasks, kpis } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function HomePage() {
+  const [events, setEvents] = useState([]);
+  const [tasks, setTasks] = useState([]);
+  const [kpis, setKpis] = useState(null);
+
+  useEffect(() => {
+    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
+    fetch(`${API}/tasks`).then((r) => r.json()).then(setTasks);
+    fetch(`${API}/kpis`).then((r) => r.json()).then(setKpis);
+  }, []);
+
+  if (!kpis) return <div className="page"><p>Loading...</p></div>;
+
   const upcomingEvents = [...events]
     .sort((a, b) => new Date(a.date) - new Date(b.date))
     .slice(0, 3);

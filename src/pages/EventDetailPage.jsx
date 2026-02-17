@@ -1,10 +1,30 @@
+import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Clock, Users, DollarSign, FileText, UtensilsCrossed } from "lucide-react";
-import { events, tasks, menus } from "../data/sampleData";
+
+const API = "http://localhost:3001/api";
 
 export default function EventDetailPage() {
   const { id } = useParams();
-  const event = events.find((e) => e.id === Number(id));
+  const [event, setEvent] = useState(null);
+  const [tasks, setTasks] = useState([]);
+  const [menus, setMenus] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    Promise.all([
+      fetch(`${API}/events`).then((r) => r.json()),
+      fetch(`${API}/tasks`).then((r) => r.json()),
+      fetch(`${API}/menus`).then((r) => r.json()),
+    ]).then(([eventsData, tasksData, menusData]) => {
+      setEvent(eventsData.find((e) => e.id === Number(id)) || null);
+      setTasks(tasksData);
+      setMenus(menusData);
+      setLoading(false);
+    });
+  }, [id]);
+
+  if (loading) return <div className="page"><p>Loading...</p></div>;
 
   if (!event) {
     return (
