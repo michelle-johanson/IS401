@@ -121,17 +121,17 @@ DB_DATABASE=catering
 
 ### 4. Create the database
 ```bash
-psql postgres -c "CREATE DATABASE catering;"
+psql -U postgres -d postgres -c "CREATE DATABASE catering;"
 ```
 
 ### 5. Run the schema (creates all tables)
 ```bash
-psql -d catering -f db/schema.sql
+psql -U postgres -d catering -f db/schema.sql
 ```
 
 ### 6. Seed the database (loads sample data)
 ```bash
-psql -d catering -f db/seed.sql
+psql -U postgres -d catering -f db/seed.sql
 ```
 
 ---
