@@ -1,6 +1,6 @@
 -- Events
 INSERT INTO events (id, name, client, venue, event_date, event_time, guests, status, budget, notes, image_url) VALUES
-(1, 'Johnson Wedding Reception', 'Sarah & Mike Johnson', 'Grand Ballroom, Hilton Downtown', '2026-03-15', '18:00', 150, 'Confirmed', 12000, 'Bride is vegetarian...', 'https://images.unsplash.com/...'),
+(1, 'Smith Wedding Reception', 'Sarah & Mike Smith', 'Grand Ballroom, Hilton Downtown', '2026-03-15', '18:00', 150, 'Confirmed', 12000, 'Bride is vegetarian...', 'https://images.unsplash.com/...'),
 (2, 'TechCorp Annual Gala', 'TechCorp Inc.', 'Convention Center Hall A', '2026-03-22', '19:00', 300, 'Confirmed', 25000, 'CEO speech at 8 PM...', 'https://images.unsplash.com/...');
 
 -- Menus
@@ -22,7 +22,7 @@ INSERT INTO menu_items (category_id, name, description, price, dietary_info) VAL
 
 -- Tasks
 INSERT INTO tasks (label, description, assigned_to, completed, event_id) VALUES
-('Confirm floral arrangements', 'Call vendor for Johnson Wedding flowers', 'Emily', true, 1),
+('Confirm floral arrangements', 'Call vendor for Smith Wedding flowers', 'Emily', true, 1),
 ('Finalize gala seating chart', 'VIP table assignments for TechCorp', 'Sarah', false, 2);
 
 -- Fix sequences (important for SERIAL IDs to work after manual inserts)
