@@ -43,11 +43,13 @@ export default function EventsPage() {
       <div className="events-grid">
         {filtered.map((evt) => (
           <Link to={`/events/${evt.id}`} key={evt.id} className="event-card">
-            <EventImage
-              src={evt.image}
-              alt={evt.name}
-              className="event-card-image"
-            />
+            <div className="event-card-image-wrapper">
+              <EventImage
+                src={evt.image}
+                alt={evt.name}
+                className="event-card-image"
+              />
+            </div>
             <div className="event-card-body">
               <div className="event-card-header">
                 <h3 className="event-card-title">{evt.name}</h3>
