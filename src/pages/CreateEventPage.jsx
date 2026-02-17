@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate, useParams, Link } from "react-router-dom";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, UploadCloud, X } from "lucide-react";
 
 const API = "http://localhost:3001/api";
 
@@ -14,19 +14,14 @@ const EMPTY_FORM = {
   budget: "",
   status: "Pending",
   notes: "",
+  image: "",
 };
 
-// Safely convert a date value to YYYY-MM-DD without timezone shifting.
-// node-postgres returns DATE columns as JS Date objects set to UTC midnight,
-// so calling .toISOString() and slicing is actually safe here — but if the
-// value is already a "YYYY-MM-DD" string (e.g. from a prior fetch mapping),
-// we return it as-is to avoid any double-conversion.
 function toDateInputValue(raw) {
   if (!raw) return "";
   if (typeof raw === "string" && /^\d{4}-\d{2}-\d{2}$/.test(raw)) return raw;
   const d = new Date(raw);
   if (isNaN(d)) return "";
-  // Use UTC getters — the DB driver sets the date at UTC midnight
   const yyyy = d.getUTCFullYear();
   const mm = String(d.getUTCMonth() + 1).padStart(2, "0");
   const dd = String(d.getUTCDate()).padStart(2, "0");
@@ -40,10 +35,12 @@ export default function CreateEventPage() {
 
   const [form, setForm] = useState(EMPTY_FORM);
   const [loading, setLoading] = useState(isEditing);
+  const [uploading, setUploading] = useState(false);
+  const [uploadError, setUploadError] = useState("");
+  const fileInputRef = useRef(null);
 
   useEffect(() => {
     if (!isEditing) return;
-
     fetch(`${API}/events`)
       .then((r) => r.json())
       .then((events) => {
@@ -54,12 +51,12 @@ export default function CreateEventPage() {
             client: event.client ?? "",
             venue: event.venue ?? "",
             date: toDateInputValue(event.date),
-            // time from the API is "HH:MM:SS" — trim to "HH:MM" for the input
             time: event.time ? String(event.time).slice(0, 5) : "",
             guests: event.guests ?? "",
             budget: event.budget ?? "",
             status: event.status ?? "Pending",
             notes: event.notes ?? "",
+            image: event.image ?? "",
           });
         }
         setLoading(false);
@@ -70,9 +67,39 @@ export default function CreateEventPage() {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const handleImageUpload = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadError("");
+    setUploading(true);
+
+    const data = new FormData();
+    data.append("image", file);
+
+    try {
+      const res = await fetch(`${API}/upload`, {
+        method: "POST",
+        body: data,
+      });
+      if (!res.ok) throw new Error("Upload failed");
+      const { url } = await res.json();
+      setForm((prev) => ({ ...prev, image: url }));
+    } catch {
+      setUploadError("Image upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleRemoveImage = () => {
+    setForm((prev) => ({ ...prev, image: "" }));
+    setUploadError("");
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     const url = isEditing ? `${API}/events/${id}` : `${API}/events`;
     const method = isEditing ? "PUT" : "POST";
 
@@ -196,6 +223,46 @@ export default function CreateEventPage() {
               required
             />
           </div>
+
+          {/* ── Image Upload ── */}
+          <div className="form-group form-group--full">
+            <label className="form-label">Event Image</label>
+
+            {form.image ? (
+              <div className="image-preview-wrapper">
+                <img src={form.image} alt="Event preview" className="image-preview" />
+                <button
+                  type="button"
+                  onClick={handleRemoveImage}
+                  className="image-preview-remove"
+                  title="Remove image"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+            ) : (
+              <label className={`image-upload-area ${uploading ? "image-upload-area--loading" : ""}`}>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  className="image-upload-input"
+                  disabled={uploading}
+                />
+                <UploadCloud size={28} className="image-upload-icon" />
+                <span className="image-upload-label">
+                  {uploading ? "Uploading…" : "Click or drag an image here"}
+                </span>
+                <span className="image-upload-hint">PNG, JPG, WEBP up to 5 MB</span>
+              </label>
+            )}
+
+            {uploadError && (
+              <p className="image-upload-error">{uploadError}</p>
+            )}
+          </div>
+
           <div className="form-group form-group--full">
             <label className="form-label">Notes</label>
             <textarea
@@ -208,8 +275,9 @@ export default function CreateEventPage() {
             />
           </div>
         </div>
+
         <div className="form-actions">
-          <button type="submit" className="btn btn--primary">
+          <button type="submit" className="btn btn--primary" disabled={uploading}>
             <Save size={18} /> {isEditing ? "Save Changes" : "Create Event"}
           </button>
           <Link

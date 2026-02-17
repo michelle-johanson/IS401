@@ -1,12 +1,52 @@
 import express from "express";
 import cors from "cors";
+import multer from "multer";
+import path from "path";
+import { fileURLToPath } from "url";
 import pool from "./db.js";
 
 const app = express();
 const PORT = process.env.PORT || 3001;
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Serve uploaded images as static files at /uploads/<filename>
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
+// Multer config — store files in server/uploads/, keep original extension
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, path.join(__dirname, "uploads"));
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const unique = `${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`;
+    cb(null, unique);
+  },
+});
+
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 }, // 5 MB max
+  fileFilter: (req, file, cb) => {
+    if (file.mimetype.startsWith("image/")) cb(null, true);
+    else cb(new Error("Only image files are allowed"));
+  },
+});
+
 app.use(cors());
 app.use(express.json());
+
+// ─── Image Upload ─────────────────────────────────────────
+app.post("/api/upload", upload.single("image"), (req, res) => {
+  if (!req.file) {
+    return res.status(400).json({ error: "No file uploaded" });
+  }
+  // Return the public URL the frontend can store and display
+  const url = `http://localhost:${PORT}/uploads/${req.file.filename}`;
+  res.json({ url });
+});
 
 // ─── Events ──────────────────────────────────────────────
 app.get("/api/events", async (req, res) => {
@@ -36,11 +76,11 @@ app.get("/api/events", async (req, res) => {
 
 app.post("/api/events", async (req, res) => {
   try {
-    const { name, client, venue, date, time, guests, status, budget, notes } = req.body;
+    const { name, client, venue, date, time, guests, status, budget, notes, image } = req.body;
     const { rows } = await pool.query(
-      `INSERT INTO events (name, client, venue, event_date, event_time, guests, status, budget, notes)
-       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *`,
-      [name, client, venue, date, time, guests, status, budget, notes]
+      `INSERT INTO events (name, client, venue, event_date, event_time, guests, status, budget, notes, image_url)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10) RETURNING *`,
+      [name, client, venue, date, time, guests, status, budget, notes, image || null]
     );
     res.status(201).json(rows[0]);
   } catch (err) {
@@ -52,14 +92,14 @@ app.post("/api/events", async (req, res) => {
 app.put("/api/events/:id", async (req, res) => {
   try {
     const { id } = req.params;
-    const { name, client, venue, date, time, guests, status, budget, notes } = req.body;
+    const { name, client, venue, date, time, guests, status, budget, notes, image } = req.body;
     const { rows } = await pool.query(
       `UPDATE events
        SET name=$1, client=$2, venue=$3, event_date=$4, event_time=$5,
-           guests=$6, status=$7, budget=$8, notes=$9
-       WHERE id=$10
+           guests=$6, status=$7, budget=$8, notes=$9, image_url=$10
+       WHERE id=$11
        RETURNING *`,
-      [name, client, venue, date, time, guests, status, budget, notes, id]
+      [name, client, venue, date, time, guests, status, budget, notes, image || null, id]
     );
     if (rows.length === 0) {
       return res.status(404).json({ error: "Event not found" });
@@ -151,7 +191,6 @@ app.put("/api/menus/:id", async (req, res) => {
   const { name, categories } = req.body;
   try {
     await pool.query("UPDATE menus SET name = $1 WHERE id = $2", [name, id]);
-    // Replace categories: delete old, insert new
     await pool.query("DELETE FROM menu_categories WHERE menu_id = $1", [id]);
 
     for (const cat of categories || []) {
@@ -241,7 +280,6 @@ app.get("/api/kpis", async (req, res) => {
     const pendingEvents = totalEvents - confirmedEvents;
     const totalRevenue = eventsResult.rows.reduce((sum, e) => sum + parseFloat(e.budget || 0), 0);
     const totalTasks = tasksResult.rows.length;
-    const completedTasks = tasksResult.rows.filter((t) => t.completed).length;
 
     res.json({
       mrr: totalRevenue,

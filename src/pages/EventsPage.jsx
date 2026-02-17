@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Search, Plus, ArrowRight } from "lucide-react";
+import EventImage from "../components/EventImage";
 
 const API = "http://localhost:3001/api";
 
@@ -42,7 +43,7 @@ export default function EventsPage() {
       <div className="events-grid">
         {filtered.map((evt) => (
           <Link to={`/events/${evt.id}`} key={evt.id} className="event-card">
-            <img
+            <EventImage
               src={evt.image}
               alt={evt.name}
               className="event-card-image"

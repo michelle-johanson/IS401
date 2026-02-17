@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
 import { ArrowLeft, MapPin, Clock, Users, DollarSign, FileText, UtensilsCrossed } from "lucide-react";
+import EventImage from "../components/EventImage";
 
 const API = "http://localhost:3001/api";
 
@@ -57,7 +58,11 @@ export default function EventDetailPage() {
       </div>
 
       <div className="detail-hero">
-        <img src={event.image} alt={event.name} className="detail-hero-image" />
+        <EventImage
+          src={event.image}
+          alt={event.name}
+          className="detail-hero-image"
+        />
       </div>
 
       <div className="detail-grid">
