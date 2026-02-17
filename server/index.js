@@ -49,6 +49,28 @@ app.post("/api/events", async (req, res) => {
   }
 });
 
+app.put("/api/events/:id", async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, client, venue, date, time, guests, status, budget, notes } = req.body;
+    const { rows } = await pool.query(
+      `UPDATE events
+       SET name=$1, client=$2, venue=$3, event_date=$4, event_time=$5,
+           guests=$6, status=$7, budget=$8, notes=$9
+       WHERE id=$10
+       RETURNING *`,
+      [name, client, venue, date, time, guests, status, budget, notes, id]
+    );
+    if (rows.length === 0) {
+      return res.status(404).json({ error: "Event not found" });
+    }
+    res.json(rows[0]);
+  } catch (err) {
+    console.error("PUT /api/events/:id error:", err);
+    res.status(500).json({ error: "Failed to update event" });
+  }
+});
+
 // ─── Menus (nested: categories → items) ──────────────────
 app.get("/api/menus", async (req, res) => {
   try {
