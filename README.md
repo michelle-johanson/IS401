@@ -42,5 +42,3 @@ The database currently includes tables for:
 | **menus** | Container for event-specific food | Belongs to an `event_id` |
 | **menu_items**| Individual dishes and prices | Belongs to a `category_id` |
 | **tasks** | Management checklist items | Belongs to an `event_id` |
-
-**Would you like me to help you create a `db/index.js` file using `pg` (node-postgres) so your JavaScript code can actually talk to this new database?**
