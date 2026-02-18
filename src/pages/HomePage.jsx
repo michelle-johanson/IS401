@@ -9,11 +9,20 @@ export default function HomePage() {
   const [tasks, setTasks] = useState([]);
   const [kpis, setKpis] = useState(null);
 
-  useEffect(() => {
-    fetch(`${API}/events`).then((r) => r.json()).then(setEvents);
-    fetch(`${API}/tasks`).then((r) => r.json()).then(setTasks);
-    fetch(`${API}/kpis`).then((r) => r.json()).then(setKpis);
-  }, []);
+useEffect(() => {
+  fetch(`${API}/events`)
+    .then((r) => r.ok ? r.json() : [])
+    .then((data) => setEvents(Array.isArray(data) ? data : []));
+
+  fetch(`${API}/tasks`)
+    .then((r) => r.ok ? r.json() : [])
+    .then((data) => setTasks(Array.isArray(data) ? data : []));
+
+  fetch(`${API}/kpis`)
+    .then((r) => r.ok ? r.json() : null)
+    .then((data) => setKpis(data));
+}, []);
+
 
   if (!kpis) return <div className="page"><p>Loading...</p></div>;
 
